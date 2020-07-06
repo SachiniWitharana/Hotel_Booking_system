@@ -1,0 +1,378 @@
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+  </head>
+  <body>
+    <div class="animated fadeIn">
+      <div class="card">
+        <div class="card-header">
+          <i class="icon-calendar"></i> Calendar
+          <div class="float-right">
+            <button type="button" class="round-button round-button-circle" data-toggle="modal" (click)="primaryModal.show()"> + </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class='app'>
+            <full-calendar
+              #calendar
+              defaultView="dayGridMonth"
+              [header]="{
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,resourceTimelineDay,resourceTimelineWeek,listWeek'
+              }"
+              [plugins]     ="calendarPlugins"
+              [weekends]    ="calendarWeekends"
+              [events]      ="calendarEvents"
+              (dateClick)   ="handleDateClick($event)"
+              schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
+              [resourceColumns]  ="resourcecolumns"
+              [resources]   ="resourcelist"
+              selectable    ="true"
+              selectHelper  ="true"
+              navLinks      ="true"
+              editable      ="true"
+              (eventResize) ="updateEvent($event.detail)"
+              (clickButton) ="clickButton($event.detail)"
+              (eventClick)  ="eventClick($event)" 
+              (eventDrop)   ="updateEvent($event.detail)"
+              (clickButton) ="clickButton($event.detail)"
+              themeSystem   ="bootstrap"
+              navLinks      ="true"
+              eventColor    ='#378006'
+            ></full-calendar>
+            <div *ngIf="is_loading">
+              <div colspan="6" class="text-center padding-top">
+                <div>
+                  <div class="lds-spinner margin-top">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                  </div>
+                </div>
+              </div>
+            </div> 
+            <!--Next-->      
+            <!--Detail Model-->
+            <div bsModal #detailModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-primary" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h4 class="modal-title">Details of Bookings</h4>
+                    <button type="button" class="close" (click)="detailModal.hide()" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>                   
+                  </div>
+                  <div class="modal-body">
+                    <!--Form starts here-->
+                    <div class="card">
+                      <div class="card-header">
+                        <strong>Details</strong> bookings
+                      </div>
+                      <div class="card-body">                  
+                          <div class="row">
+                            <div class="form-group col-sm-6">
+                             <label  for="text-input">Employee Name:</label>            
+                             <input type="text" class="form-control" #employee_name="ngModel" [(ngModel)]="selected_employee"
+                               [ngModelOptions]="{standalone: true}" name="employee_name" placeholder="" [disabled]="true" ngModel/>                  
+                            </div>
+                            <div class="form-group col-sm-6">
+                             <label  for="text-input">Client Name:</label>               
+                             <input type="text" class="form-control" #client_name="ngModel" [(ngModel)]="selected_client_name"
+                               [ngModelOptions]="{standalone: true}" name="client_name" placeholder="" [disabled]="true" ngModel/>         
+                            </div>
+                           </div>
+                           <div class="form-group row">
+                            <label class="col-md-3 col-form-label" for="text-input">Contact :</label>
+                             <div class="col-md-3">
+                             <input type="text" class="form-control" #country_code="ngModel" [(ngModel)]="selected_dial_code"
+                               [ngModelOptions]="{standalone: true}" name="country_code" placeholder="" [disabled]="true" ngModel/>                      
+                             </div>                                            
+                             <div class="col-md-6">
+                             <input type="text" class="form-control" #mobile_number="ngModel" [(ngModel)]="selected_mobile"
+                               [ngModelOptions]="{standalone: true}" name="mobile_number" placeholder="" [disabled]="true" ngModel/>                    
+                             </div>
+                          </div>        
+                         
+                        
+                          <div *ngFor="let detail of DetailsBookingList" >    
+                          <strong>Room Detail</strong>
+                            <div class="form-group row">
+                              <label class="col-md-3 col-form-label" for="text-input">Room Number:</label>
+                              <div class="col-md-9">
+                              <input type="text" class="form-control" #room_number="ngModel" [(ngModel)]="selected_room_number"
+                                [ngModelOptions]="{standalone: true}" name="room_number" placeholder="{{detail.title}}"  [disabled]="true" ngModel/>  
+                              </div>
+                            </div>                         
+                            <div class="form-group row">
+                              <label class="col-md-3 col-form-label" for="text-input">Check in date & time</label>
+                              <div class="col-md-9">
+                              <input type="text" class="form-control" #checkin="ngModel" [(ngModel)]="selected_checkin"
+                                [ngModelOptions]="{standalone: true}" name="checkin" placeholder="{{detail.start}}" [disabled]="true" ngModel/>                  
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-3 col-form-label" for="text-input">Check out date & time</label>
+                              <div class="col-md-9">
+                              <input type="text" class="form-control" #checkout="ngModel" [(ngModel)]="selected_checkout"
+                                [ngModelOptions]="{standalone: true}" name="checkout" placeholder="{{detail.end}}" [disabled]="true" ngModel/>                  
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-3 col-form-label" for="text-input">Price</label>
+                              <div class="col-md-9">
+                              <input type="text" class="form-control" #price="ngModel" [(ngModel)]="selected_reservation_time"
+                                [ngModelOptions]="{standalone: true}" name="price" placeholder="{{detail.price}}" [disabled]="true" ngModel/>                  
+                              </div>
+                            </div>
+                          </div>     
+                      <div>
+                        <strong>Total: </strong>
+                        <div class="form-group">
+                          <input type="text" #total="ngModel" [(ngModel)]="total_detail_price" id="nf-client-price" name="total_price" class="form-control" [disabled]="true" ngModel>
+                        </div>
+                      </div> 
+                      <div>
+                      <label>Checked Out? </label> 
+                        <div class="form-group">
+                        <label class="switch switch-label switch-primary">
+                          <input type="checkbox" class="switch-input" [checked]="selected_check_checkedout"
+                            (click)="toggleClicked()">
+                          <span class="switch-slider" data-checked="Yes" data-unchecked="NO"></span>
+                        </label>
+                      </div>
+                      </div> 
+                    </div>
+                    <div class="card-footer">
+                    <div class="col-4">
+                    <button type="button" (click)="showCancelMde()" class="btn btn-block btn-primary">Cancel Booking</button>
+                    </div>
+                    </div>
+                  </div>                  
+                 </div>
+                </div>
+              </div>
+            </div>
+            <!--end model-->
+
+            <div bsModal #primaryModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-primary" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h4 class="modal-title">Add Bookings</h4>       
+                    <button type="button" class="close" (click)="primaryModal.hide()" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <!--Form starts here-->
+                    <div class="card">
+                      <div class="card-header">
+                        <strong>Booking</strong> Form
+                      </div>
+                      <form action="" #registerationForm="ngForm" method="post"  (submit)="processForm( registerationForm )">
+                          <!-- Nav tabs -->
+                          <tabset>
+                            <tab>   
+                              <ng-template tabHeading>Client Information</ng-template>                        
+                              <div class="form-group row">
+                                <div class="col-7">
+                                  <div class="form-group">
+                                    <label for="nf-client-name">Full name </label>
+                                    <input type="text" #client_name="ngModel" id="nf-client-name" name="client_name" class="form-control" placeholder="Enter name.." required ngModel>
+                                    <!-- <span class="help-block">Please enter your email</span> -->
+                                  </div>
+                                </div>
+                              </div>
+                                <div class="form-group row">
+                                <div class="col-6">
+                                  <label for="nf-client-name">Phone Number</label>
+                                    <div class="form-group">
+                                    <ngx-intl-tel-input
+                                      [inputId]="'adsasd'"
+                                      [cssClass]="'custom'" 
+                                      [preferredCountries]="preferredCountries"
+                                      [enableAutoCountrySelect]="false" 
+                                      [enablePlaceholder]="true" 
+                                      [searchCountryFlag]="true"
+                                      [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                                      [selectFirstCountry]="false" 
+                                      [selectedCountryISO]="CountryISO.SriLanka"
+                                      [maxLength]="15" 
+                                      [tooltipField]="TooltipLabel.Name" 
+                                      [phoneValidation]="true" 
+                                      [separateDialCode]="separateDialCode"
+                                      #phone="ngModel"
+                                      name="phone" required ngModel>
+                                    </ngx-intl-tel-input>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="form-group row">
+                                <div class="col-6">
+                                  <div class="form-group">
+                                    <label for="nf-client-nic">Nic</label>
+                                    <input type="number" #nic="ngModel" id="nf-client-nic" name="nic" class="form-control" placeholder="Enter nic.." required ngModel>
+                                    <!-- <span class="help-block">Please enter your email</span> -->
+                                  </div>
+                                </div>
+                                <div class="col-6">
+                                  <div class="form-group">
+                                    <label for="nf-email">Email </label>
+                                    <input type="email" #email="ngModel" name="email" class="form-control" placeholder="Enter Email.." required ngModel>
+                                    <!-- <span class="help-block">Please enter your email</span> -->
+                                  </div>
+                                </div>
+                              </div>                                       
+                            </tab>
+                            <tab>
+                              <ng-template tabHeading>Room reservation info</ng-template>
+                              <!--Reservation Details-->   
+                              <ng-template ngFor let-inputelement [ngForOf]="form.inputelements" let-index="index" let-isLast="last">
+                                <div class="card">   
+                                <button type="button" title="Remove"class="btn btn-sm btn-primary" (click)="removeInputElement()">Remove Room</button>
+                                <br>
+                                  <fieldset [disabled]="isDisabled">
+                                  <div class="col-7">
+                                      <div class="form-group">                  
+                                        <label for="nf-room">Room Number</label>
+                                          <select required #room_number="ngModel" name="room_number_{{inputelement.id}}" [(ngModel)]="inputelement.room_number" (change)='getRoomID(room_number.value)' [class.invalid]="room_number.invalid || room_number.touched" class="form-control" required ngModel>
+                                            <option value="">Please select</option>
+                                            <option *ngFor="let room of roomList" [value]="room.id">{{room.room_number}} ~ Rs.{{room.price}}</option>
+                                          </select>
+                                        <small class="text-danger" [class.d-none]="room_number.valid || room_number.untouched">Please choose a room number </small>
+                                        <!-- <span class="help-block">Please enter your email</span> -->
+                                      </div>
+                                  </div>
+                                  <div class="col-7">
+                                    <div class="form-group">
+                                      <label for="nf-client-checkin">Price</label>
+                                      <input type="text" #price="ngModel" [(ngModel)]="inputelement.price" (change)='getRoomPrice(price.value)'  id="nf-client-price" name="price_{{inputelement.id}}" class="form-control" placeholder="Enter price for room"  required ngModel>
+                                      <small class="text-danger" [class.d-none]="price.valid || price.untouched">Please enter a price</small>
+                                      <!-- <span class="help-block">Please enter your email</span> -->
+                                    </div>
+                                  </div>
+                                  <div class="col-7">
+                                      <div class="form-group">
+                                        <label for="nf-client-checkin">Check-in time</label>
+                                        <input type="datetime-local" #checkin="ngModel" [(ngModel)]="inputelement.checkin" (change)='getCheckInTIme(checkin.value)'  id="nf-client-checkin" name="checkin_{{inputelement.id}}" class="form-control" placeholder="Enter check in time.."  required ngModel>
+                                        <small class="text-danger" [class.d-none]="checkin.valid || checkin.untouched">Please choose a check in</small>
+                                        <!-- <span class="help-block">Please enter your email</span> -->
+                                      </div>
+                                    </div>
+                                    <div class="col-7">
+                                      <div class="form-group">
+                                        <label for="nf-client-checkout">Check-out time</label>
+                                        <input type="datetime-local" #checkout="ngModel" [(ngModel)]="inputelement.checkout" (change)='getCheckOutTIme(checkout.value)'  id="nf-client-checkout" name="checkout_{{inputelement.id}}" class="form-control" placeholder="Enter check out time.." required ngModel>
+                                        <small class="text-danger" [class.d-none]="checkout.valid || checkout.untouched">Please choose a check out</small>
+                                        <!-- <span class="help-block">Please enter your email</span> -->
+                                      </div>
+                                    </div>  
+                                  </fieldset>   
+                              </div>
+                             </ng-template>
+                             <strong>Total: </strong>
+                             <div class="form-group">
+                              <input type="text" #total="ngModel" [(ngModel)]="total_price" id="nf-client-price" name="total_price" class="form-control" [disabled]="true" ngModel>
+                            </div>
+                              <label>If you need to add extra rooms please press the button below <strong>:</strong></label>
+                              <button type="button" title="Add"class="btn btn-sm btn-primary" (click)="addInputElement(index)">Add More Rooms</button>
+                              <div *ngIf="is_loading">
+                                <div colspan="6" class="text-center padding-top">
+                                  <div>
+                                    <div class="lds-spinner margin-top">
+                                      <div></div>
+                                      <div></div>
+                                      <div></div>
+                                      <div></div>
+                                      <div></div>
+                                      <div></div>
+                                      <div></div>
+                                      <div></div>
+                                      <div></div>
+                                      <div></div>
+                                      <div></div>
+                                      <div></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div> 
+                              <div class="card-footer">
+                                <button type="submit" [disabled]="registerationForm.form.invalid" class="btn btn-sm btn-primary" (click)="handleDateClick($event)" ><i class="fa fa-dot-circle-o"></i> Submit</button>
+                                <button type="reset" class="btn btn-sm btn-danger"><i class="fa fa-ban"></i> Reset</button>
+                              </div>   
+                            </tab>  
+                          </tabset>
+                        </form>
+                    </div>
+                    <!--Form ends here-->
+                  </div>             
+                </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+            <!--Next-->
+
+                        
+            <!--Cancel booking Model-->
+            <div bsModal #activeModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+            aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <form>
+                    <div class="modal-header">
+                      <h4 class="modal-title">Change Activation</h4>
+                      <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                        (click)="cancel()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                      <p>Are you sure you want to cancel the booking? </p>
+                    </div>
+                    <div class="modal-footer">
+                      <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel" (click)="cancel()">
+                      <input type="submit" class="btn btn-info"  value="Save" (click)="cancelBooking()">
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div><!--category activity-->
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- The Modal
+    <div class="modal" id="myModal" [style.display]="showModal ? 'block' : 'none'">
+      <div class="modal-dialog">
+        <div class="modal-content">
+        
+        
+          <div class="modal-header">
+            <h4 class="modal-title">{{ name }}</h4>
+            <button type="button" class="close" data-dismiss="modal" (click) = "hide()">&times;</button>
+          </div>
+          
+          Modal body 
+          <div class="modal-body">
+            Event Start From : {{ date }}
+          </div>
+          
+          Modal footer 
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal" (click) = "hide()">Close</button>
+          </div>
+          
+        </div>
+    </div> -->
+  
+
+  </body>
+</html>

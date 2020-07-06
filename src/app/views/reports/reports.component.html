@@ -1,0 +1,88 @@
+<div class="col-lg-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="float-left">   
+        <i class="fa fa-align-justify"></i>Bookings List 
+        </div>   
+        <div class="float-right">   
+        <tr>
+            <th>
+              <div class="row">
+                <div class="col-6 col-sm-5 col-md-2 col-xl mb-3 mb-xl-0">
+                <strong>From: </strong><input type="date" #from="ngModel" (change)='getReportFromTime(from.value)' id="nf-client-checkin" class="form-control" placeholder="Enter check in time.."  ngModel>
+                </div>
+              </div>
+            </th>
+            <th>     
+                <div class="row">
+                  <div class="col-6 col-sm-5 col-md-2 col-xl mb-3 mb-xl-0">
+                  <strong>To: </strong><input type="date" #to="ngModel" (change)='getReportToTime(to.value)' id="nf-client-checkin" class="form-control" placeholder="Enter check in time.." ngModel>
+                  </div>
+                </div>
+            </th>
+            <th>
+              <br>
+            </th>
+            <th>
+                <div class="row">
+                  <div class="col-6 col-sm-5 col-md-2 col-xl mb-3 mb-xl-0">
+                    <strong> </strong><button type="button" (click)="primaryModal.show()" class="btn btn-block btn-primary">Generate Report</button>
+                  </div>
+                </div>
+            </th>
+        </tr>
+      </div>
+      </div>
+      <div class="card-body">
+        <table class="table  table-striped">
+          <thead class="table-info">
+            <tr>
+              <th>#</th>
+              <th>Room Number</th>
+              <th>Booking Check In Time</th>
+              <th>Booking Check Out Time</th>
+              <th>Room Price</th>
+              <th>View Details of Client</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr 
+              *ngFor ="let bookings of DetailsList| paginate: { itemsPerPage: pageSize, currentPage: p, totalItems: total }">
+              <td>{{ bookings.id }}</td>
+              <td>{{ bookings.title}}</td>
+              <td>{{ bookings.start}}</td>
+              <td>{{ bookings.end}}</td>
+              <td>{{ bookings.price}}</td>
+              <td> 
+                <a (click)="updateValues(bookings.id)" data-target="#editServiceModal" class="btn btn-primary-new">View</a>
+              </td>
+          </tr>
+          <tr *ngIf="DetailsList.length < 1 && !is_loading">
+            <td colspan="6" class="text-center">There is  are no bookings upto now!</td>
+          </tr>
+          <tr *ngIf="is_loading">
+            <td colspan="6" class="text-center padding-top">
+              <div>
+                <div class="lds-spinner margin-top">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+              </div>
+            </td>
+          </tr> 
+          </tbody>
+        </table>
+    
+      </div>
+    </div>
+  </div>
